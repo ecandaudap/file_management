@@ -19,7 +19,7 @@ def create(file_name: str, content: list | dict = None) -> None:
         raise OSError(f"File '{file_name}' already exists") from error
 
     except PermissionError as error:
-        raise OSError(f"You do not hav permisson to create '{file_name}'") from error
+        raise OSError(f"You do not have permisson to create '{file_name}'") from error
 
     if content and isinstance(content, (list, dict)):
         content = json.dumps(content)
@@ -63,14 +63,19 @@ def update(file_name: str, content: list | dict) -> None:
 
 
 def read(file_name: str) -> str:
-    """Returns the content of a text file
+    """Returns the content of a existing file
 
     Args:
         file_name (str): File name or path
 
     Returns(str): File content
     """
-    file = open(file_name)
-    content = file.read()
+    try:
+        file = open(file_name)
+
+    except FileNotFoundError as error:
+        raise OSError(f"File '{file_name}' not exists") from error
+    
+    content = json.loads(file.read())
     file.close()
     return content

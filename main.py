@@ -1,12 +1,22 @@
+import json
 import files
 
-files.create_file('sample1.txt', 'Crea contenido del archivo')
-#files.create_file('sample2.txt')
+user1 = {
+    "username": "alfredoa",
+    "name": "Alfredo",
+    "last_name": "Altamirano",
+    "password": "aSDFGHJKASasd"
+    }
 
-files.modify_file('sample1.txt', "Este contenido fue sobreescrito", overwrite = True)
-#files.modify_file('sample2.txt', "Este contenido fue adicionado", overwrite = False)
 
-files.read_file('sample1.txt')
 
-files.delete_file('sample1.txt')
-#files.delete_file('sample2.txt')
+user2 = {
+    "username": "ecandaudap",
+    "name": "Eduardo",
+    "last_name": "Candaudap",
+    "password": "ayhbhujmk"
+    }
+
+# files.update('sample.json', user2)
+
+print(files.read('sample.json'))
