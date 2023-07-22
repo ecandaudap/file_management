@@ -1,42 +1,76 @@
-''' Script that allows you to perform different operations on files in Python'''
+"""File management"""
+import os
+import json
 
-def read_file(file_name):
-    
-    '''Function that allows you to read a file'''
 
-    file = open(file_name, "r", encoding="utf-8")
-    
-    file.close()
+def create(file_name: str, content: list | dict = None) -> None:
+    """Create a new json file
 
-def create_file(file_name, content=None):
-    
-    '''Function that allows you to create a file 
-    with or without initial content'''
-    
-    mode = 'w' if content else 'x'
+    Args:
+        file_name (str): File name or path
+        content (str, optional): Text file content. Defaults to None.
+    """
+    mode = "w" if content else "x"
 
-    file = open(file_name, mode, encoding="utf-8")
+    try:
+        file = open(file_name, mode)
 
-    if content:
+    except FileExistsError as error:
+        raise OSError(f"File '{file_name}' already exists") from error
+
+    except PermissionError as error:
+        raise OSError(f"You do not hav permisson to create '{file_name}'") from error
+
+    if content and isinstance(content, (list, dict)):
+        content = json.dumps(content)
         file.write(content)
-    
+
     file.close()
 
-def modify_file(file_name, content, overwrite=False):
 
-    '''Function that allows you to write or overwrite 
-    the content of a file'''
-   
-    mode = "w" if overwrite else "a"
+def update(file_name: str, content: list | dict) -> None:
+    """Updates an existing file
 
-    file = open(file_name, mode, encoding="utf-8")
-    file.write(content)
+    Args:
+        file_name (str): File name or path
+        content (str): Text file content
+        overwrite (bool, optional): If True, file will be overwritten. Defaults to False.
+    """
+    if not isinstance(content, dict | list) or content == "":
+        raise ValueError("'content' argument must be specified")
+
+    file = open(file_name)
+    file_content = json.loads(file.read())
     file.close()
 
-def delete_file(file_name):
+    if isinstance(file_content, list):
+        if isinstance(content, dict):
+            file_content.append(content)
 
-    '''Function that allows you to delete a file'''
-    
-    import os
-    os.remove(file_name)
+        elif isinstance(content, list):
+            file_content += content
 
+    elif isinstance(file_content, dict):
+        if isinstance(content, dict):
+            file_content = [file_content, content]
+
+        elif isinstance(content, list):
+            file_content = [file_content] + content
+
+    file = open(file_name, "w")
+    file.write(json.dumps(file_content))
+    file.close()
+
+
+def read(file_name: str) -> str:
+    """Returns the content of a text file
+
+    Args:
+        file_name (str): File name or path
+
+    Returns(str): File content
+    """
+    file = open(file_name)
+    content = file.read()
+    file.close()
+    return content
